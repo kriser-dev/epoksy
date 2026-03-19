@@ -34,7 +34,6 @@ export default function Home() {
   const [hoveredStep, setHoveredStep] = useState<number | null>(null);
   const [showCookieBanner, setShowCookieBanner] = useState<boolean>(false);
   const [activeModal, setActiveModal] = useState<ModalType>(null);
-  const [activeCard, setActiveCard] = useState<number | null>(null);
 
   useEffect(() => {
     // Sprawdzanie zgody na cookies
@@ -380,24 +379,19 @@ export default function Home() {
                 fix: "Warstwa ochronna odporna na chemię agresywną."
               }
             ].map((item, i) => (
-              <div 
-                key={i} 
-                className="group relative h-[320px] [perspective:1000px] cursor-pointer"
-                onClick={() => setActiveCard(activeCard === i ? null : i)}
-                onMouseLeave={() => setActiveCard(null)}
-              >
-                <div className={`relative h-full w-full transition-all duration-500 [transform-style:preserve-3d] ${activeCard === i ? '[transform:rotateY(10deg)] -translate-y-4' : 'lg:group-hover:[transform:rotateY(10deg)] lg:group-hover:-translate-y-4'}`}>
-                  <div className={`absolute inset-0 backdrop-blur-sm rounded-[2rem] p-10 flex flex-col items-center text-center justify-center border shadow-sm transition-colors ${activeCard === i ? 'bg-blue-50/80 border-blue-200' : 'bg-white/80 border-slate-100 lg:group-hover:border-blue-200 lg:group-hover:bg-blue-50/80'}`}>
-                    <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-sm transition-colors ${activeCard === i ? 'bg-white text-blue-600' : 'bg-slate-50 lg:group-hover:bg-white lg:group-hover:text-blue-600'}`}>
+              <div key={i} className="group relative h-[320px] [perspective:1000px]">
+                <div className="relative h-full w-full transition-all duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(10deg)] group-hover:-translate-y-4">
+                  <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-[2rem] p-10 flex flex-col items-center text-center justify-center border border-slate-100 shadow-sm group-hover:border-blue-200 group-hover:bg-blue-50/80 transition-colors">
+                    <div className="w-20 h-20 bg-slate-50 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:bg-white group-hover:text-blue-600 transition-colors">
                       <item.icon className="w-10 h-10" />
                     </div>
                     <h3 className="text-xl font-black uppercase mb-3 tracking-tight">{item.title}</h3>
                     <p className="text-sm text-slate-500">{item.desc}</p>
-                    <div className={`mt-6 flex items-center gap-2 text-[10px] font-black uppercase text-blue-600 transition-opacity ${activeCard === i ? 'opacity-100' : 'opacity-0 lg:group-hover:opacity-100'}`}>
+                    <div className="mt-6 flex items-center gap-2 text-[10px] font-black uppercase text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
                       Rozwiązanie <ArrowRight className="w-3 h-3" />
                     </div>
                   </div>
-                  <div className={`absolute bottom-0 left-0 right-0 p-8 transition-all duration-500 bg-blue-600 rounded-[2rem] text-white ${activeCard === i ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100'}`}>
+                  <div className="absolute bottom-0 left-0 right-0 p-8 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 bg-blue-600 rounded-[2rem] text-white">
                     <p className="font-bold text-sm leading-relaxed">{item.fix}</p>
                   </div>
                 </div>
@@ -609,8 +603,8 @@ export default function Home() {
                   <div>
                     <p className="text-[10px] font-black uppercase text-blue-500 tracking-[0.3em] mb-3">Telefony kontaktowe</p>
                     <div className="flex flex-col gap-1">
-                      <a href="tel:+48504056342" className="text-2xl md:text-3xl font-black transition-colors hover:text-blue-400">+48 504 056 342</a>
-                      <a href="tel:+48690080708" className="text-2xl md:text-3xl font-black transition-colors hover:text-blue-400">+48 690 080 708</a>
+                      <a href="tel:+48500600700" className="text-2xl md:text-3xl font-black transition-colors hover:text-blue-400">+48 500 600 700</a>
+                      <a href="tel:+48500600701" className="text-2xl md:text-3xl font-black transition-colors hover:text-blue-400">+48 500 600 701</a>
                     </div>
                   </div>
                 </div>
@@ -619,7 +613,7 @@ export default function Home() {
                   <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-blue-600 transition-colors"><Mail className="w-8 h-8" /></div>
                   <div>
                     <p className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] mb-2">E-mail</p>
-                    <a href="mailto:konatkt@epoksy.pl" className="text-xl md:text-2xl font-bold transition-colors hover:text-blue-400">kontakt@epoksy.pl</a>
+                    <a href="mailto:wyceny@epoksy.pl" className="text-xl md:text-2xl font-bold transition-colors hover:text-blue-400">wyceny@epoksy.pl</a>
                   </div>
                 </div>
 
@@ -627,14 +621,14 @@ export default function Home() {
                   <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-blue-600 transition-colors"><MapPin className="w-8 h-8" /></div>
                   <div>
                     <p className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] mb-2">Siedziba</p>
-                    <p className="text-xl md:text-2xl font-bold">ul. Legionów 37c<br/>42-600 Tarnowskie Góry</p>
+                    <p className="text-xl md:text-2xl font-bold">ul. Przemysłowa 5<br/>60-101 Poznań</p>
                   </div>
                 </div>
               </div>
 
               <div className="relative z-10 mt-20 p-8 bg-white/5 border border-white/10 rounded-[2rem] backdrop-blur-sm">
                 <h4 className="font-black uppercase tracking-widest text-sm mb-4">Gwarancja Satysfakcji</h4>
-                <p className="text-slate-400 text-sm leading-relaxed">Każda nasza realizacja objęta jest gwarancją materiałową oraz wykonawczą. Pracujemy wyłącznie na certyfikowanych żywicach europejskich.</p>
+                <p className="text-slate-400 text-sm leading-relaxed">Każda nasza realizacja objęta jest 5-letnią gwarancją materiałową oraz wykonawczą. Pracujemy wyłącznie na certyfikowanych żywicach europejskich.</p>
               </div>
             </div>
           </div>
