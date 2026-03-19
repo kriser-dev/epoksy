@@ -6,11 +6,10 @@ import Link from 'next/link';
 import { 
   Menu, X, Phone, MapPin, 
   CheckCircle, Shield, 
-  Layers, Factory, Car, 
+  Droplets, Factory, Car, 
   Search, MessageSquare, ClipboardCheck, HardHat, Plus, Minus,
   AlertTriangle, Hammer,
-  Facebook, Instagram, Linkedin, ChevronUp, Sparkles, ArrowRight, Mail, Cookie,
-  FileText
+  Facebook, Instagram, Linkedin, ChevronUp, Sparkles, ArrowRight, Mail
 } from 'lucide-react';
 
 interface FormData {
@@ -18,8 +17,6 @@ interface FormData {
   phone: string;
   details: string;
 }
-
-type ModalType = 'privacy' | 'cookies' | null;
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -32,63 +29,19 @@ export default function Home() {
   });
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [hoveredStep, setHoveredStep] = useState<number | null>(null);
-  const [showCookieBanner, setShowCookieBanner] = useState<boolean>(false);
-  const [activeModal, setActiveModal] = useState<ModalType>(null);
 
   useEffect(() => {
-    // Sprawdzanie zgody na cookies
-    const cookieConsent = localStorage.getItem('epoksy-cookie-consent');
-    if (!cookieConsent) {
-      setShowCookieBanner(true);
-    }
-
     const handleScroll = () => {
       setShowBackToTop(window.scrollY > 400);
-      
-      // Automatyczne usuwanie #hasha z paska adresu, gdy użytkownik wróci na samą górę
-      if (window.scrollY < 50) {
-        if (window.location.hash) {
-          window.history.replaceState(null, '', window.location.pathname);
-        }
-      }
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Blokowanie scrollowania strony gdy otwarty jest modal
-  useEffect(() => {
-    if (activeModal) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-  }, [activeModal]);
-
-  const acceptCookies = () => {
-    localStorage.setItem('epoksy-cookie-consent', 'true');
-    setShowCookieBanner(false);
-  };
-
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    // Usuwanie #hasha po kliknięciu w logo lub przycisk powrotu do góry
-    window.history.replaceState(null, '', window.location.pathname);
-    setIsMenuOpen(false);
-  };
-
-  // Wymuszone płynne przewijanie do sekcji niezależnie od stanu URL
-  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
-    const targetId = href.replace(/.*\#/, "");
-    const elem = document.getElementById(targetId);
-    if (elem) {
-      elem.scrollIntoView({ behavior: 'smooth' });
-      window.history.pushState(null, '', href);
-    }
-    setIsMenuOpen(false);
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -101,11 +54,6 @@ export default function Home() {
     setFormStatus('Dziękujemy. Nasz inżynier skontaktuje się z Tobą w ciągu 24h.');
     setFormData({ name: '', phone: '', details: '' });
     setTimeout(() => setFormStatus(null), 6000);
-  };
-
-  const openModal = (e: React.MouseEvent, type: ModalType) => {
-    e.preventDefault();
-    setActiveModal(type);
   };
 
   const faqData = [
@@ -127,13 +75,14 @@ export default function Home() {
     }
   ];
 
+  // Dane strukturalne Schema.org dla lokalnego biznesu
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": "Epoksy",
-    "image": "https://epoksy.pl/logo.png",
+    "name": "SteelResin",
+    "image": "https://steelresin.pl/logo.png",
     "telephone": "+48500600700",
-    "url": "https://epoksy.pl",
+    "url": "https://steelresin.pl",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "ul. Przemysłowa 5",
@@ -145,130 +94,43 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-blue-600 selection:text-white scroll-smooth relative">
+    <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-blue-600 selection:text-white scroll-smooth">
       
+      {/* JSON-LD Schema.org */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
-      {/* MODALE PRAWNE (Polityka Prywatności i Cookies) */}
-      {activeModal && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white rounded-3xl p-8 md:p-12 max-w-3xl w-full max-h-[85vh] overflow-y-auto relative shadow-2xl">
-            <button 
-              onClick={() => setActiveModal(null)} 
-              className="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors"
-            >
-              <X className="w-6 h-6" />
-            </button>
-            
-            <div className="flex items-center gap-4 mb-8 border-b border-slate-100 pb-6">
-              <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
-                {activeModal === 'privacy' ? <FileText className="w-6 h-6" /> : <Cookie className="w-6 h-6" />}
-              </div>
-              <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter text-slate-900">
-                {activeModal === 'privacy' ? 'Polityka Prywatności' : 'Polityka Cookies'}
-              </h2>
-            </div>
-
-            <div className="text-sm text-slate-600 space-y-6 leading-relaxed">
-              {activeModal === 'privacy' ? (
-                <>
-                  <p><strong>1. Administrator Danych</strong><br/>Administratorem Twoich danych osobowych przekazywanych w ramach formularza kontaktowego jest firma Epoksy z siedzibą w Poznaniu, ul. Przemysłowa 5, 60-101 Poznań.</p>
-                  <p><strong>2. Cel przetwarzania</strong><br/>Twoje dane (imię, numer telefonu, szczegóły inwestycji) przetwarzane są wyłącznie w celu obsługi Twojego zapytania, przygotowania wyceny oraz kontaktu zwrotnego w sprawie usług posadzkowych.</p>
-                  <p><strong>3. Podstawa prawna</strong><br/>Podstawą prawną przetwarzania danych jest podjęcie działań na żądanie osoby, której dane dotyczą, przed zawarciem umowy (art. 6 ust. 1 lit. b RODO) oraz nasz prawnie uzasadniony interes w postaci odpowiedzi na zapytania klientów (art. 6 ust. 1 lit. f RODO).</p>
-                  <p><strong>4. Okres przechowywania</strong><br/>Dane będziemy przetwarzać przez okres niezbędny do obsługi zapytania i przygotowania oferty, a po tym czasie mogą być one przechowywane przez okres przedawnienia ewentualnych roszczeń.</p>
-                  <p><strong>5. Twoje prawa</strong><br/>Posiadasz prawo dostępu do treści swoich danych oraz prawo ich sprostowania, usunięcia, ograniczenia przetwarzania, prawo do przenoszenia danych oraz prawo wniesienia sprzeciwu. Posiadasz również prawo wniesienia skargi do organu nadzorczego (Prezesa Urzędu Ochrony Danych Osobowych).</p>
-                </>
-              ) : (
-                <>
-                  <p><strong>1. Czym są pliki cookies?</strong><br/>Pliki cookies (tzw. "ciasteczka") to niewielkie pliki tekstowe wysyłane przez serwer internetowy i zapisywane po stronie użytkownika (na komputerze, smartfonie itp.). Pozwalają one na zapamiętanie specyficznych informacji dotyczących Twojej wizyty na stronie.</p>
-                  <p><strong>2. W jakim celu używamy cookies?</strong><br/>Na naszej stronie (Epoksy.pl) używamy ciasteczek w następujących celach:</p>
-                  <ul className="list-disc pl-5 space-y-2 mt-2">
-                    <li><strong>Niezbędne:</strong> Utrzymanie prawidłowego działania strony (np. zapamiętanie faktu ukrycia banera informacyjnego o cookies).</li>
-                    <li><strong>Analityczne:</strong> Zbieranie anonimowych statystyk, które pozwalają nam zrozumieć, w jaki sposób użytkownicy korzystają ze strony (np. Google Analytics), co umożliwia ulepszanie jej struktury i zawartości.</li>
-                  </ul>
-                  <p><strong>3. Zarządzanie plikami cookies</strong><br/>Większość przeglądarek internetowych domyślnie dopuszcza przechowywanie plików cookies. Możesz w każdej chwili dokonać zmiany ustawień dotyczących plików cookies w swojej przeglądarce (np. zablokować ich automatyczną obsługę lub wymusić informowanie o ich każdorazowym przesłaniu na urządzenie).</p>
-                  <p className="font-bold text-slate-900 mt-6">Pamiętaj, że ograniczenia stosowania plików cookies mogą wpłynąć na niektóre funkcjonalności dostępne na naszej stronie internetowej.</p>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* BANER COOKIES */}
-      {showCookieBanner && (
-        <div className="fixed bottom-4 left-4 right-4 md:left-8 md:right-auto md:max-w-md z-[120] bg-slate-900 text-white p-6 rounded-3xl shadow-2xl border border-slate-800 animate-in slide-in-from-bottom-10 fade-in duration-500">
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 bg-blue-600/20 rounded-full flex items-center justify-center shrink-0">
-              <Cookie className="w-5 h-5 text-blue-500" />
-            </div>
-            <div>
-              <h4 className="text-sm font-bold uppercase tracking-widest mb-2">Polityka Cookies</h4>
-              <p className="text-xs text-slate-400 leading-relaxed mb-4">
-                Używamy ciasteczek (cookies), aby zapewnić Ci najwyższą jakość usług i optymalizować działanie strony. Dalsze korzystanie z witryny oznacza zgodę na ich wykorzystanie.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <button 
-                  onClick={acceptCookies} 
-                  className="text-xs font-bold uppercase tracking-widest bg-blue-600 hover:bg-blue-500 text-white px-5 py-3 rounded-xl transition-colors active:scale-95"
-                >
-                  Akceptuję
-                </button>
-                <Link 
-                  href="#" 
-                  onClick={(e) => openModal(e, 'cookies')}
-                  className="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-white px-5 py-3 transition-colors flex items-center"
-                >
-                  Dowiedz się więcej
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
+      {/* Przycisk powrotu do góry */}
       <button 
         onClick={scrollToTop}
-        className={`fixed bottom-8 right-8 z-[110] p-4 bg-blue-600 text-white rounded-full shadow-2xl transition-all duration-500 hover:bg-slate-700 hover:-translate-y-2 ${showBackToTop && !showCookieBanner ? 'opacity-100 scale-100' : 'opacity-0 scale-0 pointer-events-none'}`}
+        className={`fixed bottom-8 right-8 z-[110] p-4 bg-blue-600 text-white rounded-full shadow-2xl transition-all duration-500 hover:bg-slate-700 hover:-translate-y-2 ${showBackToTop ? 'opacity-100 scale-100' : 'opacity-0 scale-0 pointer-events-none'}`}
       >
         <ChevronUp className="w-6 h-6" />
       </button>
 
+      {/* Nawigacja */}
       <nav className="fixed w-full z-[100] bg-white/95 backdrop-blur-md border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20 items-center">
             <button onClick={scrollToTop} className="flex items-center gap-3 group text-left transition-transform active:scale-95">
               <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:rotate-12 transition-transform duration-300">
-                <Layers className="text-white w-6 h-6" />
+                <Droplets className="text-white w-6 h-6" />
               </div>
               <div className="flex flex-col">
-                <span className="font-black text-2xl leading-none tracking-tighter text-slate-900">EPOKSY<span className="text-blue-600">.</span></span>
+                <span className="font-black text-xl leading-none tracking-tighter">STEEL<span className="text-blue-600">RESIN</span></span>
                 <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Industrial Floors</span>
               </div>
             </button>
 
             <div className="hidden lg:flex space-x-10 items-center">
-              {['O nas', 'Oferta', 'Realizacje', 'Proces'].map((item) => {
-                const href = `#${item.toLowerCase().replace(' ', '-')}`;
-                return (
-                  <Link 
-                    key={item} 
-                    href={href} 
-                    onClick={(e) => scrollToSection(e, href)}
-                    className="text-xs font-black uppercase tracking-widest text-slate-600 hover:text-blue-600 transition-colors"
-                  >
-                    {item}
-                  </Link>
-                );
-              })}
-              <Link 
-                href="#kontakt" 
-                onClick={(e) => scrollToSection(e, '#kontakt')}
-                className="bg-blue-600 text-white px-8 py-3 rounded-md font-bold text-xs uppercase tracking-[0.2em] hover:bg-slate-400 hover:text-slate-900 transition-all duration-300 shadow-lg shadow-blue-600/20"
-              >
+              {['O nas', 'Oferta', 'Realizacje', 'Proces'].map((item) => (
+                <Link key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} className="text-xs font-black uppercase tracking-widest text-slate-600 hover:text-blue-600 transition-colors">
+                  {item}
+                </Link>
+              ))}
+              <Link href="#kontakt" className="bg-blue-600 text-white px-8 py-3 rounded-md font-bold text-xs uppercase tracking-[0.2em] hover:bg-slate-400 hover:text-slate-900 transition-all duration-300 shadow-lg shadow-blue-600/20">
                 Kontakt
               </Link>
             </div>
@@ -278,34 +140,9 @@ export default function Home() {
             </button>
           </div>
         </div>
-
-        {/* Menu mobilne */}
-        {isMenuOpen && (
-          <div className="lg:hidden bg-white border-b border-slate-100 p-4 space-y-4 animate-in slide-in-from-top-5 shadow-xl">
-            {['O nas', 'Oferta', 'Realizacje', 'Proces'].map((item) => {
-              const href = `#${item.toLowerCase().replace(' ', '-')}`;
-              return (
-                <Link 
-                  key={item} 
-                  href={href} 
-                  onClick={(e) => scrollToSection(e, href)}
-                  className="block text-sm font-black uppercase tracking-widest p-3 text-slate-900 hover:bg-slate-50 rounded-lg"
-                >
-                  {item}
-                </Link>
-              );
-            })}
-            <Link 
-              href="#kontakt" 
-              onClick={(e) => scrollToSection(e, '#kontakt')}
-              className="block text-sm font-black uppercase tracking-widest p-3 text-blue-600 hover:bg-blue-50 rounded-lg"
-            >
-              Kontakt
-            </Link>
-          </div>
-        )}
       </nav>
 
+      {/* HERO SECTION */}
       <header className="relative pt-20 min-h-screen flex items-center bg-slate-900 overflow-hidden">
         <div className="absolute inset-0">
           <Image 
@@ -324,6 +161,7 @@ export default function Home() {
               <Sparkles className="w-3 h-3" /> Realizacje w całej Polsce
             </div>
             
+            {/* Poprawione SEO H1 */}
             <h1 className="flex flex-col text-6xl md:text-8xl font-black text-white leading-[0.9] mb-8 uppercase tracking-tighter">
               <span className="text-sm md:text-base font-bold text-blue-400 tracking-[0.4em] mb-4 uppercase">Posadzki żywiczne przemysłowe</span>
               <span>Beton, który <br/><span className="text-blue-500">nie pęka.</span></span>
@@ -333,11 +171,7 @@ export default function Home() {
               Specjalistyczne systemy żywiczne dla najbardziej wymagających środowisk przemysłowych. Odporność, której możesz zaufać.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link 
-                href="#kontakt" 
-                onClick={(e) => scrollToSection(e, '#kontakt')}
-                className="px-10 py-5 bg-blue-600 text-white font-black uppercase tracking-widest hover:bg-slate-300 hover:text-slate-900 transition-all duration-300 flex items-center gap-3 group shadow-2xl shadow-blue-600/30"
-              >
+              <Link href="#kontakt" className="px-10 py-5 bg-blue-600 text-white font-black uppercase tracking-widest hover:bg-slate-300 hover:text-slate-900 transition-all duration-300 flex items-center gap-3 group shadow-2xl shadow-blue-600/30">
                 Darmowa wycena <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
@@ -346,16 +180,11 @@ export default function Home() {
       </header>
 
       {/* SEKCOJA PROBLEMÓW */}
-      <section id="o-nas" className="py-32 bg-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-50 pointer-events-none"></div>
-        
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-50 rounded-full blur-[100px] opacity-70 pointer-events-none"></div>
-        <div className="absolute bottom-10 -left-20 w-72 h-72 bg-slate-100 rounded-full blur-[80px] opacity-60 pointer-events-none"></div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <section className="py-32 bg-white relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-20">
             <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-6">Twoja posadzka <span className="text-blue-600">wymaga odnowienia?</span></h2>
-            <p className="text-slate-500 text-lg">Przejdź kursorem nad kartą, aby zobaczyć jak Epoksy rozwiązuje Twój problem.</p>
+            <p className="text-slate-500 text-lg">Przejdź kursorem nad kartą, aby zobaczyć jak SteelResin rozwiązuje Twój problem.</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -381,8 +210,8 @@ export default function Home() {
             ].map((item, i) => (
               <div key={i} className="group relative h-[320px] [perspective:1000px]">
                 <div className="relative h-full w-full transition-all duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(10deg)] group-hover:-translate-y-4">
-                  <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-[2rem] p-10 flex flex-col items-center text-center justify-center border border-slate-100 shadow-sm group-hover:border-blue-200 group-hover:bg-blue-50/80 transition-colors">
-                    <div className="w-20 h-20 bg-slate-50 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:bg-white group-hover:text-blue-600 transition-colors">
+                  <div className="absolute inset-0 bg-slate-50 rounded-[2rem] p-10 flex flex-col items-center text-center justify-center border border-slate-100 group-hover:border-blue-200 group-hover:bg-blue-50/30 transition-colors">
+                    <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:text-blue-600 transition-colors">
                       <item.icon className="w-10 h-10" />
                     </div>
                     <h3 className="text-xl font-black uppercase mb-3 tracking-tight">{item.title}</h3>
@@ -447,10 +276,8 @@ export default function Home() {
       </section>
 
       {/* OFERTA */}
-      <section id="oferta" className="py-24 bg-slate-50 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none"></div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <section id="oferta" className="py-24 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-16">
             <h2 className="text-4xl font-black uppercase tracking-tighter">Nasze <span className="text-blue-600">Specjalizacje</span></h2>
             <div className="w-16 h-1 bg-blue-600 mt-4"></div>
@@ -458,21 +285,15 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               { title: "Epoksydowe", type: "Heavy Duty", icon: Factory, desc: "Najwyższa odporność mechaniczna dla fabryk i logistyki ciężkiej." },
-              { title: "Poliuretanowe", type: "Design & Comfort", icon: Layers, desc: "Elastyczne i ciche posadzki idealne do biur, salonów i showroomów." },
+              { title: "Poliuretanowe", type: "Design & Comfort", icon: Droplets, desc: "Elastyczne i ciche posadzki idealne do biur, salonów i showroomów." },
               { title: "Garażowe", type: "Anti-Slip", icon: Car, desc: "Systemy odporne na sól drogową i ścieranie opon, klasa antypoślizgowa R10." }
             ].map((item, i) => (
-              <div key={i} className="p-12 bg-white/90 backdrop-blur-sm rounded-3xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-slate-100 group">
+              <div key={i} className="p-12 bg-white rounded-3xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-slate-100 group">
                 <item.icon className="w-14 h-14 text-blue-600 mb-8 group-hover:rotate-6 transition-transform" />
                 <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mb-3">{item.type}</p>
                 <h3 className="text-2xl font-black mb-4 uppercase tracking-tighter">{item.title}</h3>
                 <p className="text-slate-500 text-sm leading-relaxed mb-8">{item.desc}</p>
-                <Link 
-                  href="#kontakt" 
-                  onClick={(e) => scrollToSection(e, '#kontakt')}
-                  className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-blue-600 group-hover:text-slate-900 transition-colors"
-                >
-                  Zapytaj o cenę <Plus className="w-4 h-4" />
-                </Link>
+                <Link href="#kontakt" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-blue-600 group-hover:text-slate-900 transition-colors">Zapytaj o cenę <Plus className="w-4 h-4" /></Link>
               </div>
             ))}
           </div>
@@ -480,11 +301,8 @@ export default function Home() {
       </section>
 
       {/* REALIZACJE */}
-      <section id="realizacje" className="py-32 bg-white relative overflow-hidden">
-        <div className="absolute top-[10%] left-[-10%] w-[40%] h-[50%] bg-blue-50/60 rounded-full blur-[120px] pointer-events-none"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[40%] bg-slate-100 rounded-full blur-[100px] pointer-events-none"></div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <section id="realizacje" className="py-32 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
             <div>
               <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-slate-900 mb-4">Ostatnie <span className="text-blue-600">Projekty</span></h2>
@@ -494,10 +312,10 @@ export default function Home() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="relative group overflow-hidden rounded-[2rem] aspect-[16/10] shadow-xl shadow-slate-200/50">
+            <div className="relative group overflow-hidden rounded-[2rem] aspect-[16/10]">
               <Image 
                 src="https://images.unsplash.com/photo-1531834685032-c34bf0d84c77?auto=format&fit=crop&q=80" 
-                alt="System epoksydowy w magazynie logistycznym Amazon - realizacja Epoksy" 
+                alt="System epoksydowy w magazynie logistycznym Amazon - realizacja SteelResin" 
                 fill
                 className="object-cover group-hover:scale-110 transition-transform duration-700" 
                 unoptimized
@@ -508,10 +326,10 @@ export default function Home() {
                 <h3 className="text-3xl font-black uppercase tracking-tighter">System Epoksydowy High-Gloss</h3>
               </div>
             </div>
-            <div className="relative group overflow-hidden rounded-[2rem] aspect-[16/10] shadow-xl shadow-slate-200/50">
+            <div className="relative group overflow-hidden rounded-[2rem] aspect-[16/10]">
               <Image 
                 src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&q=80" 
-                alt="Posadzka parkingowa OS8 w apartamentowcu Platinum - realizacja Epoksy" 
+                alt="Posadzka parkingowa OS8 w apartamentowcu Platinum - realizacja SteelResin" 
                 fill
                 className="object-cover group-hover:scale-110 transition-transform duration-700" 
                 unoptimized
@@ -527,17 +345,15 @@ export default function Home() {
       </section>
 
       {/* FAQ */}
-      <section className="py-32 bg-slate-50 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-30 pointer-events-none"></div>
-
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <section className="py-32 bg-slate-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-6">Częste <span className="text-blue-600">Pytania</span></h2>
             <p className="text-slate-500 uppercase text-xs font-bold tracking-[0.3em]">Baza wiedzy klienta</p>
           </div>
           <div className="space-y-4">
             {faqData.map((faq, i) => (
-              <div key={i} className="bg-white/90 backdrop-blur-sm border border-slate-100 rounded-[1.5rem] overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-blue-900/5 group">
+              <div key={i} className="bg-white border border-slate-100 rounded-[1.5rem] overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-blue-900/5 group">
                 <button 
                   onClick={() => setActiveFaq(activeFaq === i ? null : i)}
                   className="w-full flex justify-between items-center p-8 text-left transition-colors"
@@ -562,42 +378,39 @@ export default function Home() {
       <section id="kontakt" className="py-32 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-slate-900 rounded-[4rem] shadow-3xl overflow-hidden flex flex-col lg:flex-row">
-            <div className="lg:w-1/2 p-12 md:p-24 bg-white relative">
-              <div className="absolute inset-0 bg-[linear-gradient(to_right,#f8fafc_1px,transparent_1px),linear-gradient(to_bottom,#f8fafc_1px,transparent_1px)] bg-[size:2rem_2rem] opacity-50 pointer-events-none"></div>
+            <div className="lg:w-1/2 p-12 md:p-24 bg-white">
+              <h2 className="text-4xl font-black uppercase tracking-tighter mb-6 text-slate-900">Kontakt i <span className="text-blue-600">Wycena</span></h2>
+              <p className="text-slate-500 mb-12 text-lg">Opisz swój problem, a my postaramy się pomóc.</p>
               
-              <div className="relative z-10">
-                <h2 className="text-4xl font-black uppercase tracking-tighter mb-6 text-slate-900">Kontakt i <span className="text-blue-600">Wycena</span></h2>
-                <p className="text-slate-500 mb-12 text-lg">Opisz swój projekt, a my przygotujemy bezpłatną kalkulację kosztów.</p>
-                
-                {formStatus ? (
-                  <div className="bg-blue-50 text-blue-700 p-10 rounded-3xl font-bold flex items-center gap-4 animate-in fade-in zoom-in">
-                    <CheckCircle className="w-10 h-10 shrink-0" /> {formStatus}
-                  </div>
-                ) : (
-                  <form onSubmit={handleFormSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Imię / Firma</label>
-                        <input type="text" id="name" required className="w-full p-5 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none transition-all shadow-sm" onChange={handleInputChange} value={formData.name} />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Telefon</label>
-                        <input type="tel" id="phone" required className="w-full p-5 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none transition-all shadow-sm" onChange={handleInputChange} value={formData.phone} />
-                      </div>
+              {formStatus ? (
+                <div className="bg-blue-50 text-blue-700 p-10 rounded-3xl font-bold flex items-center gap-4 animate-in fade-in zoom-in">
+                  <CheckCircle className="w-10 h-10 shrink-0" /> {formStatus}
+                </div>
+              ) : (
+                <form onSubmit={handleFormSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Imię / Firma</label>
+                      <input type="text" id="name" required className="w-full p-5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none transition-all" onChange={handleInputChange} value={formData.name} />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Szczegóły inwestycji</label>
-                      <textarea id="details" rows={4} required className="w-full p-5 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none transition-all shadow-sm" onChange={handleInputChange} value={formData.details}></textarea>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Telefon</label>
+                      <input type="tel" id="phone" required className="w-full p-5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none transition-all" onChange={handleInputChange} value={formData.phone} />
                     </div>
-                    <button className="w-full py-6 bg-blue-600 text-white font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-slate-900 transition-all duration-300 shadow-xl shadow-blue-600/20 active:scale-95">Wyślij Formularz</button>
-                  </form>
-                )}
-              </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Szczegóły</label>
+                    <textarea id="details" rows={4} required className="w-full p-5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none transition-all" onChange={handleInputChange} value={formData.details}></textarea>
+                  </div>
+                  <button className="w-full py-6 bg-blue-600 text-white font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-slate-900 transition-all duration-300 shadow-xl shadow-blue-600/20 active:scale-95">Wyślij Formularz</button>
+                </form>
+              )}
             </div>
             <div className="lg:w-1/2 p-12 md:p-24 text-white flex flex-col justify-between relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
               
               <div className="relative z-10 space-y-12">
+                {/* 1. Telefony */}
                 <div className="flex gap-8 group">
                   <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 transition-transform"><Phone className="w-8 h-8" /></div>
                   <div>
@@ -609,14 +422,16 @@ export default function Home() {
                   </div>
                 </div>
 
+                {/* 2. E-mail */}
                 <div className="flex gap-8 group">
                   <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-blue-600 transition-colors"><Mail className="w-8 h-8" /></div>
                   <div>
                     <p className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] mb-2">E-mail</p>
-                    <a href="mailto:wyceny@epoksy.pl" className="text-xl md:text-2xl font-bold transition-colors hover:text-blue-400">wyceny@epoksy.pl</a>
+                    <a href="mailto:wyceny@steelresin.pl" className="text-xl md:text-2xl font-bold transition-colors hover:text-blue-400">wyceny@steelresin.pl</a>
                   </div>
                 </div>
 
+                {/* 3. Siedziba */}
                 <div className="flex gap-8 group">
                   <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-blue-600 transition-colors"><MapPin className="w-8 h-8" /></div>
                   <div>
@@ -628,14 +443,14 @@ export default function Home() {
 
               <div className="relative z-10 mt-20 p-8 bg-white/5 border border-white/10 rounded-[2rem] backdrop-blur-sm">
                 <h4 className="font-black uppercase tracking-widest text-sm mb-4">Gwarancja Satysfakcji</h4>
-                <p className="text-slate-400 text-sm leading-relaxed">Każda nasza realizacja objęta jest 5-letnią gwarancją materiałową oraz wykonawczą. Pracujemy wyłącznie na certyfikowanych żywicach europejskich.</p>
+                <p className="text-slate-400 text-sm leading-relaxed">Każda nasza realizacja objęta jest gwarancją materiałową oraz wykonawczą. Pracujemy wyłącznie na certyfikowanych żywicach europejskich.</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* SEKCOJA SEO */}
+      {/* SEKCOJA SEO (Baza wiedzy indeksowana przez Google) */}
       <section className="py-20 bg-slate-50 border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-sm text-slate-500 leading-relaxed">
@@ -669,9 +484,9 @@ export default function Home() {
             <div className="flex flex-col items-center md:items-start gap-4">
               <button onClick={scrollToTop} className="flex items-center gap-3 active:scale-95 transition-transform group">
                 <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center group-hover:bg-blue-500 transition-colors">
-                  <Layers className="text-white w-5 h-5" />
+                  <Droplets className="text-white w-5 h-5" />
                 </div>
-                <span className="font-black text-xl text-white tracking-tighter">EPOKSY<span className="text-blue-500">.</span></span>
+                <span className="font-black text-xl text-white tracking-tighter">STEEL<span className="text-blue-500">RESIN</span></span>
               </button>
               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center md:text-left">Profesjonalne systemy posadzkowe od 2009 roku.</p>
             </div>
@@ -685,23 +500,11 @@ export default function Home() {
             </div>
 
             <div className="text-center md:text-right">
-              <p className="font-black text-xs tracking-widest text-white uppercase">EPOKSY © 2026</p>
+              <p className="font-black text-xs tracking-widest text-white uppercase">STEELRESIN © 2024</p>
               <div className="mt-4 flex gap-3 text-[10px] font-bold uppercase text-slate-500 tracking-widest justify-center md:justify-end">
-                <Link 
-                  href="#" 
-                  onClick={(e) => openModal(e, 'privacy')}
-                  className="hover:text-blue-500 transition-colors"
-                >
-                  Polityka prywatności
-                </Link>
+                <Link href="#" className="hover:text-blue-500 transition-colors">Polityka prywatności</Link>
                 <span>|</span>
-                <Link 
-                  href="#" 
-                  onClick={(e) => openModal(e, 'cookies')}
-                  className="hover:text-blue-500 transition-colors"
-                >
-                  Cookies
-                </Link>
+                <Link href="#" className="hover:text-blue-500 transition-colors">Cookies</Link>
               </div>
             </div>
           </div>
