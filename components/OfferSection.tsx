@@ -2,13 +2,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { Factory, Layers, Car, Plus } from 'lucide-react';
+import { scrollToElement } from '@/lib/utils';
 
 const OfferSection = () => {
-  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
-    document.getElementById(href.replace(/.*\#/, ""))?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
     <section id="oferta" className="py-24 bg-slate-50 relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none"></div>
@@ -28,7 +24,7 @@ const OfferSection = () => {
               <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mb-3">{item.type}</p>
               <h3 className="text-2xl font-black mb-4 uppercase tracking-tighter">{item.title}</h3>
               <p className="text-slate-500 text-sm leading-relaxed mb-8">{item.desc}</p>
-              <Link href="#kontakt" onClick={(e) => scrollToSection(e, '#kontakt')} className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-blue-600 group-hover:text-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50 focus-visible:rounded-md p-1">
+              <Link href="#kontakt" onClick={(e) => scrollToElement(e, '#kontakt')} className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-blue-600 group-hover:text-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50 focus-visible:rounded-md p-1">
                 Zapytaj o cenę <Plus className="w-4 h-4" />
               </Link>
             </div>

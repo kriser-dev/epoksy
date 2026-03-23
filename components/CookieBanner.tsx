@@ -7,10 +7,22 @@ const CookieBanner = ({ setActiveModal }: SetterProps) => {
   const [showCookieBanner, setShowCookieBanner] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem('epoksy-cookie-consent')) {
+    if (typeof window !== 'undefined' && !localStorage.getItem('epoksy-cookie-consent-v1')) {
       setShowCookieBanner(true);
     }
   }, []);
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowCookieBanner(false);
+    };
+    if (showCookieBanner && typeof window !== 'undefined') {
+      window.addEventListener('keydown', handleEsc);
+    }
+    return () => {
+      if (typeof window !== 'undefined') window.removeEventListener('keydown', handleEsc);
+    };
+  }, [showCookieBanner]);
 
   if (!showCookieBanner) return null;
 
@@ -26,7 +38,7 @@ const CookieBanner = ({ setActiveModal }: SetterProps) => {
             Używamy ciasteczek (cookies), aby zapewnić Ci najwyższą jakość usług i optymalizować działanie strony. Dalsze korzystanie z witryny oznacza zgodę na ich wykorzystanie.
           </p>
           <div className="flex flex-wrap gap-3">
-            <button type="button" onClick={() => { localStorage.setItem('epoksy-cookie-consent', 'true'); setShowCookieBanner(false); }} className="text-xs font-bold uppercase tracking-widest bg-blue-600 hover:bg-blue-500 text-white px-5 py-3 rounded-xl transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-400/50">
+            <button type="button" onClick={() => { localStorage.setItem('epoksy-cookie-consent-v1', 'accepted'); setShowCookieBanner(false); }} className="text-xs font-bold uppercase tracking-widest bg-blue-600 hover:bg-blue-500 text-white px-5 py-3 rounded-xl transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-400/50">
               Akceptuję
             </button>
             <button type="button" onClick={() => setActiveModal('cookies')} className="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-white px-5 py-3 transition-colors flex items-center focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-500/50 focus-visible:rounded-xl">

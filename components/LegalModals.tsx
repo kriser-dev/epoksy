@@ -1,19 +1,32 @@
 "use client";
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X, FileText, Cookie } from 'lucide-react';
 import { ModalProps } from '../types';
 
 const LegalModals = ({ activeModal, setActiveModal }: ModalProps) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    document.body.style.overflow = activeModal ? 'hidden' : 'unset';
+    if (typeof window !== 'undefined') {
+      document.body.style.overflow = activeModal ? 'hidden' : 'unset';
+      if (activeModal && modalRef.current) {
+        modalRef.current.focus();
+      }
+    }
   }, [activeModal]);
 
   if (!activeModal) return null;
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="bg-white rounded-3xl p-8 md:p-12 max-w-3xl w-full max-h-[85vh] overflow-y-auto relative shadow-2xl">
-        <button type="button" onClick={() => setActiveModal(null)} className="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors" aria-label="Zamknij okno">
+      <div 
+        ref={modalRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        className="bg-white rounded-3xl p-8 md:p-12 max-w-3xl w-full max-h-[85vh] overflow-y-auto relative shadow-2xl outline-none"
+      >
+        <button type="button" onClick={() => setActiveModal(null)} className="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50" aria-label="Zamknij okno">
           <X className="w-6 h-6" />
         </button>
         

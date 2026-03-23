@@ -2,14 +2,10 @@
 import React from 'react';
 import Link from 'next/link';
 import { Layers, Facebook, Instagram, Linkedin } from 'lucide-react';
+import { scrollToTop } from '@/lib/utils';
 import { SetterProps } from '../types';
 
 const Footer = ({ setActiveModal }: SetterProps) => {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    window.history.replaceState(null, '', window.location.pathname);
-  };
-
   return (
     <footer className="bg-slate-950 py-16 border-t border-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -38,15 +34,6 @@ const Footer = ({ setActiveModal }: SetterProps) => {
               <button type="button" onClick={() => setActiveModal('privacy')} className="hover:text-blue-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:rounded-sm">Polityka prywatności</button>
               <span>|</span>
               <button type="button" onClick={() => setActiveModal('cookies')} className="hover:text-blue-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:rounded-sm">Cookies</button>
-            </div>
-          </div>
-
-          <div className="text-center md:text-right">
-            <p className="font-black text-xs tracking-widest text-white uppercase">EPOKSY © 2026</p>
-            <div className="mt-4 flex gap-3 text-[10px] font-bold uppercase text-slate-500 tracking-widest justify-center md:justify-end">
-              <button type="button" onClick={() => setActiveModal('privacy')} className="hover:text-blue-500 transition-colors">Polityka prywatności</button>
-              <span>|</span>
-              <button type="button" onClick={() => setActiveModal('cookies')} className="hover:text-blue-500 transition-colors">Cookies</button>
             </div>
           </div>
         </div>

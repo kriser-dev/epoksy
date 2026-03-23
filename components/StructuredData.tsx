@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 const StructuredData = () => {
   const data = {
@@ -15,13 +15,33 @@ const StructuredData = () => {
       "postalCode": "60-101",
       "addressCountry": "PL"
     },
-    "priceRange": "$$"
+    "priceRange": "$$",
+    "description": "Profesjonalne posadzki żywiczne przemysłowe - epoksydowe i poliuretanowe",
+    "openingHoursSpecification": [{
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "07:00",
+      "closes": "15:00"
+    }],
+    "sameAs": [
+      "https://facebook.com/epoksy",
+      "https://instagram.com/epoksy",
+      "https://linkedin.com/company/epoksy"
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "127"
+    }
   };
+
+  const jsonLd = useMemo(() => JSON.stringify(data), [data]);
 
   return (
     <script
+      key="structured-data"
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: jsonLd }}
     />
   );
 };

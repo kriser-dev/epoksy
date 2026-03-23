@@ -3,17 +3,13 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Sparkles, ArrowRight } from 'lucide-react';
+import { scrollToElement } from '@/lib/utils';
 
 const Hero = () => {
-  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
-    document.getElementById(href.replace(/.*\#/, ""))?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
     <header className="relative pt-20 min-h-screen flex items-center bg-slate-900 overflow-hidden">
       <div className="absolute inset-0">
-        <Image src="https://images.unsplash.com/photo-1513467535987-fd81bc7d62f8?auto=format&fit=crop&q=80" alt="Nowoczesna posadzka epoksydowa w hali przemysłowej" fill sizes="100vw" className="object-cover opacity-30" priority unoptimized />
+        <Image src="https://images.unsplash.com/photo-1513467535987-fd81bc7d62f8?auto=format&fit=crop&q=80" alt="Nowoczesna posadzka epoksydowa w hali przemysłowej" fill sizes="100vw" className="object-cover opacity-30" priority quality={85} />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent"></div>
       </div>
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
@@ -29,7 +25,7 @@ const Hero = () => {
             Specjalistyczne systemy żywiczne dla najbardziej wymagających środowisk przemysłowych. Odporność, której możesz zaufać.
           </p>
           <div className="flex flex-wrap gap-4">
-            <Link href="#kontakt" onClick={(e) => scrollToSection(e, '#kontakt')} className="px-10 py-5 bg-blue-600 text-white font-black uppercase tracking-widest hover:bg-slate-300 hover:text-slate-900 transition-all duration-300 flex items-center gap-3 group shadow-2xl shadow-blue-600/30 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50 focus-visible:rounded-lg">
+            <Link href="#kontakt" onClick={(e) => scrollToElement(e, '#kontakt')} className="px-10 py-5 bg-blue-600 text-white font-black uppercase tracking-widest hover:bg-slate-300 hover:text-slate-900 transition-all duration-300 flex items-center gap-3 group shadow-2xl shadow-blue-600/30 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50 focus-visible:rounded-lg">
               Darmowa wycena <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>

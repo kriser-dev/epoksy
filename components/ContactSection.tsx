@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { CheckCircle, Phone, Mail, MapPin } from 'lucide-react';
 import { FormData } from '../types';
@@ -12,12 +13,51 @@ const ContactSection = () => {
     setFormData(prev => ({ ...prev, [id]: value }));
   };
 
-  const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setFormStatus('Dziękujemy. Nasz inżynier skontaktuje się z Tobą w ciągu 24h.');
-    setFormData({ name: '', phone: '', details: '' });
+    
+    // Potężna walidacja przed wysłaniem formularza
+    if (!formData.name.trim() || formData.name.length < 2) {
+      setFormStatus('Proszę podać poprawne imię/firmę (min. 2 znaki).');
+      setTimeout(() => setFormStatus(null), 4000);
+      return;
+    }
+
+    if (!/^\+?[\d\s\-]{9,15}$/.test(formData.phone)) {
+      setFormStatus('Proszę podać poprawny numer telefonu (np. +48 500 600 700).');
+      setTimeout(() => setFormStatus(null), 4000);
+      return;
+    }
+
+    if (formData.details.length < 10) {
+      setFormStatus('Proszę podać więcej szczegółów inwestycji (min. 10 znaków).');
+      setTimeout(() => setFormStatus(null), 4000);
+      return;
+    }
+
+    try {
+      // DOCELOWY KOD: Odkomentuj przy integracji z backendem (np. Next.js API Routes / Sendgrid)
+      /*
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) throw new Error('Network response was not ok');
+      */
+
+      setFormStatus('Dziękujemy. Nasz inżynier skontaktuje się z Tobą w ciągu 24h.');
+      setFormData({ name: '', phone: '', details: '' });
+    } catch (error) {
+      setFormStatus('Wystąpił błąd podczas wysyłania. Spróbuj ponownie lub zadzwoń.');
+    }
+    
     setTimeout(() => setFormStatus(null), 6000);
   };
+
+  // Ulepszone zabezpieczenie przed skanerami E-mail
+  const emailParts = ['wyceny', 'epoksy.pl'];
+  const emailAddress = emailParts.join('@');
 
   return (
     <section id="kontakt" className="py-32 bg-white">
@@ -31,24 +71,25 @@ const ContactSection = () => {
               <p className="text-slate-500 mb-12 text-lg">Opisz swój projekt, a my przygotujemy bezpłatną kalkulację kosztów.</p>
               
               {formStatus ? (
-                <div className="bg-blue-50 text-blue-700 p-10 rounded-3xl font-bold flex items-center gap-4 animate-in fade-in zoom-in">
-                  <CheckCircle className="w-10 h-10 shrink-0" /> {formStatus}
+                <div className={`p-10 rounded-3xl font-bold flex items-center gap-4 animate-in fade-in zoom-in ${formStatus.includes('błąd') || formStatus.includes('Proszę') ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700'}`}>
+                  {formStatus.includes('Dziękujemy') ? <CheckCircle className="w-10 h-10 shrink-0" /> : <AlertTriangle className="w-10 h-10 shrink-0" />} 
+                  {formStatus}
                 </div>
               ) : (
                 <form onSubmit={handleFormSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Imię / Firma</label>
-                      <input type="text" id="name" required className="w-full p-5 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none transition-all shadow-sm focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50" onChange={handleInputChange} value={formData.name} />
+                      <input type="text" id="name" required minLength={2} className="w-full p-5 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none transition-all shadow-sm focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50" onChange={handleInputChange} value={formData.name} />
                     </div>
                     <div className="space-y-2">
                       <label htmlFor="phone" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Telefon</label>
-                      <input type="tel" id="phone" required className="w-full p-5 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none transition-all shadow-sm focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50" onChange={handleInputChange} value={formData.phone} />
+                      <input type="tel" id="phone" required pattern="^\+?[\d\s\-]{9,15}$" title="Dozwolone są cyfry, spacje i opcjonalny plus na początku" className="w-full p-5 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none transition-all shadow-sm focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50" onChange={handleInputChange} value={formData.phone} />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="details" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Szczegóły inwestycji</label>
-                    <textarea id="details" rows={4} required className="w-full p-5 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none transition-all shadow-sm focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50" onChange={handleInputChange} value={formData.details}></textarea>
+                    <textarea id="details" rows={4} required minLength={10} className="w-full p-5 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none transition-all shadow-sm focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50" onChange={handleInputChange} value={formData.details}></textarea>
                   </div>
                   <button type="submit" className="w-full py-6 bg-blue-600 text-white font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-slate-900 transition-all duration-300 shadow-xl shadow-blue-600/20 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50">Wyślij Formularz</button>
                 </form>
@@ -74,15 +115,9 @@ const ContactSection = () => {
                 <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-blue-600 transition-colors"><Mail className="w-8 h-8" /></div>
                 <div>
                   <p className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] mb-2">E-mail</p>
-                  <a href="mailto:wyceny@epoksy.pl" className="text-xl md:text-2xl font-bold transition-colors hover:text-blue-400 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50 focus-visible:rounded-lg p-1 -ml-1 inline-block">wyceny@epoksy.pl</a>
-                </div>
-              </div>
-
-              <div className="flex gap-8 group">
-                <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-blue-600 transition-colors"><Mail className="w-8 h-8" /></div>
-                <div>
-                  <p className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] mb-2">E-mail</p>
-                  <a href="mailto:wyceny@epoksy.pl" className="text-xl md:text-2xl font-bold transition-colors hover:text-blue-400">wyceny@epoksy.pl</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); if(typeof window !== 'undefined') window.location.href = `mailto:${emailAddress}`; }} className="text-xl md:text-2xl font-bold transition-colors hover:text-blue-400 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50 focus-visible:rounded-lg p-1 -ml-1 inline-block">
+                    wyceny<span className="text-blue-500">@</span>epoksy.pl
+                  </a>
                 </div>
               </div>
 
@@ -90,7 +125,9 @@ const ContactSection = () => {
                 <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-blue-600 transition-colors"><MapPin className="w-8 h-8" /></div>
                 <div>
                   <p className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] mb-2">Siedziba</p>
-                  <p className="text-xl md:text-2xl font-bold">ul. Przemysłowa 5<br/>60-101 Poznań</p>
+                  <address className="not-italic text-xl md:text-2xl font-bold">
+                    ul. Przemysłowa 5<br/>60-101 Poznań
+                  </address>
                 </div>
               </div>
             </div>

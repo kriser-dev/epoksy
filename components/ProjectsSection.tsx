@@ -5,36 +5,11 @@ import { ChevronLeft, ChevronRight, X, Expand } from 'lucide-react';
 
 // Baza danych naszych zdjęć do portfolio (można tu dodać ich dowolną ilość)
 const portfolioImages = [
-  {
-    id: 1,
-    src: "https://images.unsplash.com/photo-1531834685032-c34bf0d84c77?auto=format&fit=crop&q=80",
-    title: "Magazyn Amazon",
-    desc: "System Epoksydowy High-Gloss (6500m²)"
-  },
-  {
-    id: 2,
-    src: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&q=80",
-    title: "Apartamenty Platinum",
-    desc: "System Parkingowy OS8 (1200m²)"
-  },
-  {
-    id: 3,
-    src: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80",
-    title: "Hala Produkcyjna TechPro",
-    desc: "Posadzka Antypoślizgowa R10 (3000m²)"
-  },
-  {
-    id: 4,
-    src: "https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&q=80",
-    title: "Showroom Auto-Premium",
-    desc: "Poliuretan Dekoracyjny (800m²)"
-  },
-  {
-    id: 5,
-    src: "https://images.unsplash.com/photo-1616423640778-28d1b53229bd?auto=format&fit=crop&q=80",
-    title: "Centrum Logistyczne",
-    desc: "Posadzka Grubopowłokowa (4500m²)"
-  }
+  { id: 1, src: "https://images.unsplash.com/photo-1531834685032-c34bf0d84c77?auto=format&fit=crop&q=80", title: "Magazyn Amazon", desc: "System Epoksydowy High-Gloss (6500m²)" },
+  { id: 2, src: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&q=80", title: "Apartamenty Platinum", desc: "System Parkingowy OS8 (1200m²)" },
+  { id: 3, src: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80", title: "Hala Produkcyjna TechPro", desc: "Posadzka Antypoślizgowa R10 (3000m²)" },
+  { id: 4, src: "https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&q=80", title: "Showroom Auto-Premium", desc: "Poliuretan Dekoracyjny (800m²)" },
+  { id: 5, src: "https://images.unsplash.com/photo-1616423640778-28d1b53229bd?auto=format&fit=crop&q=80", title: "Centrum Logistyczne", desc: "Posadzka Grubopowłokowa (4500m²)" }
 ];
 
 const ProjectsSection = () => {
@@ -61,12 +36,16 @@ const ProjectsSection = () => {
       if (e.key === 'Escape') closeGallery();
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    document.body.style.overflow = isGalleryOpen ? 'hidden' : 'unset';
+    if (typeof window !== 'undefined') {
+      window.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = isGalleryOpen ? 'hidden' : 'unset';
+    }
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'unset';
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('keydown', handleKeyDown);
+        document.body.style.overflow = 'unset';
+      }
     };
   }, [isGalleryOpen, nextImage, prevImage, closeGallery]);
 
@@ -91,18 +70,18 @@ const ProjectsSection = () => {
           </button>
         </div>
         
-        {/* Podgląd dwóch głównych projektów (Statyczny) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {portfolioImages.slice(0, 2).map((item, index) => (
             <div key={index} className="relative group overflow-hidden rounded-[2rem] aspect-[16/10] shadow-xl shadow-slate-200/50">
+              {/* Dodano optymalizację quality={85} dla lepszej jakości (priority już było) */}
               <Image 
                 src={item.src} 
                 alt={item.title} 
                 fill 
                 sizes="(max-width: 768px) 100vw, 50vw" 
                 className="object-cover group-hover:scale-110 transition-transform duration-700" 
-                priority={index === 0}
-                unoptimized 
+                priority={index === 0} 
+                quality={85}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent opacity-90"></div>
               <div className="absolute bottom-10 left-10 text-white">
@@ -114,11 +93,8 @@ const ProjectsSection = () => {
         </div>
       </div>
 
-      {/* PEŁNOEKRANOWA GALERIA LIGHTBOX */}
       {isGalleryOpen && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center bg-slate-950/95 backdrop-blur-xl animate-in fade-in duration-300">
-          
-          {/* Przycisk Zamknij */}
           <button 
             type="button"
             onClick={closeGallery}
@@ -128,21 +104,17 @@ const ProjectsSection = () => {
             <X className="w-6 h-6" />
           </button>
 
-          {/* Główny Kontener Zdjęcia */}
           <div className="relative w-full max-w-6xl px-4 flex flex-col items-center justify-center h-full">
-            
-            {/* Zdjęcie */}
             <div className="relative w-full aspect-video max-h-[70vh] rounded-2xl overflow-hidden shadow-2xl border border-white/10">
               <Image 
                 src={portfolioImages[currentImageIndex].src} 
                 alt={portfolioImages[currentImageIndex].title}
                 fill
+                quality={85}
                 className="object-contain bg-slate-900/50"
-                unoptimized
               />
             </div>
 
-            {/* Napisy pod zdjęciem */}
             <div className="mt-8 text-center animate-in slide-in-from-bottom-4">
               <p className="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] mb-2">
                 Zdjęcie {currentImageIndex + 1} z {portfolioImages.length}
@@ -153,7 +125,6 @@ const ProjectsSection = () => {
               <p className="text-slate-400 text-sm">{portfolioImages[currentImageIndex].desc}</p>
             </div>
 
-            {/* Przycisk Poprzednie */}
             <button 
               type="button"
               onClick={prevImage}
@@ -163,7 +134,6 @@ const ProjectsSection = () => {
               <ChevronLeft className="w-8 h-8" />
             </button>
 
-            {/* Przycisk Następne */}
             <button 
               type="button"
               onClick={nextImage}
@@ -172,10 +142,8 @@ const ProjectsSection = () => {
             >
               <ChevronRight className="w-8 h-8" />
             </button>
-
           </div>
 
-          {/* Miniaturki na dole ekranu */}
           <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-3 px-4 overflow-x-auto pb-4">
             {portfolioImages.map((item, index) => (
               <button
@@ -186,15 +154,13 @@ const ProjectsSection = () => {
               >
                 <Image 
                   src={item.src} 
-                  alt={`Miniaturka: ${item.title}`}
+                  alt={`Miniaturka: ${item.title}`} 
                   fill 
                   className="object-cover" 
-                  unoptimized 
                 />
               </button>
             ))}
           </div>
-
         </div>
       )}
     </section>

@@ -1,4 +1,5 @@
 export type ModalType = 'privacy' | 'cookies' | null;
+export type SectionId = 'o-nas' | 'proces' | 'oferta' | 'realizacje' | 'kontakt';
 
 export interface FormData {
   name: string;

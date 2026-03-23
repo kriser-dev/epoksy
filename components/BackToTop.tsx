@@ -1,25 +1,35 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronUp } from 'lucide-react';
+import { SCROLL_THRESHOLD, scrollToTop } from '@/lib/utils';
 
 const BackToTop = () => {
   const [show, setShow] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setShow(window.scrollY > 400);
+  const handleScroll = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      setShow(window.scrollY > SCROLL_THRESHOLD);
       if (window.scrollY < 50 && window.location.hash) {
         window.history.replaceState(null, '', window.location.pathname);
       }
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    }
   }, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    window.history.replaceState(null, '', window.location.pathname);
-  };
+  useEffect(() => {
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking && typeof window !== 'undefined') {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [handleScroll]);
 
   return (
     <button 

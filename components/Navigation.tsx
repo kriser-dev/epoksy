@@ -2,26 +2,20 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Menu, X, Layers } from 'lucide-react';
+import { scrollToElement, scrollToTop } from '@/lib/utils';
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    window.history.replaceState(null, '', window.location.pathname);
+  const handleLogoClick = () => {
+    scrollToTop();
     setIsMenuOpen(false);
   };
 
-  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
-    const targetId = href.replace(/.*\#/, "");
-    const elem = document.getElementById(targetId);
-    if (elem) {
-      elem.scrollIntoView({ behavior: 'smooth' });
-      window.history.pushState(null, '', href);
-    }
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    scrollToElement(e, href);
     setIsMenuOpen(false);
   };
 
@@ -31,7 +25,7 @@ const Navigation = () => {
     <nav className="fixed w-full z-[100] bg-white/95 backdrop-blur-md border-b border-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
-          <button type="button" onClick={scrollToTop} className="flex items-center gap-3 group text-left transition-transform active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50 focus-visible:rounded-lg" aria-label="Strona główna Epoksy">
+          <button type="button" onClick={handleLogoClick} className="flex items-center gap-3 group text-left transition-transform active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50 focus-visible:rounded-lg" aria-label="Strona główna Epoksy">
             <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:rotate-12 transition-transform duration-300">
               <Layers className="text-white w-6 h-6" />
             </div>
@@ -45,12 +39,13 @@ const Navigation = () => {
             {navLinks.map((item) => {
               const href = `#${item.toLowerCase().replace(' ', '-')}`;
               return (
-                <Link key={item} href={href} onClick={(e) => scrollToSection(e, href)} className="text-xs font-black uppercase tracking-widest text-slate-600 hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50 focus-visible:rounded-md p-1">
+                // Zmieniono text-xs na text-sm i text-slate-600 na text-slate-700 (Lepszy kontrast WCAG)
+                <Link key={item} href={href} onClick={(e) => handleNavClick(e, href)} className="text-sm font-black uppercase tracking-widest text-slate-700 hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50 focus-visible:rounded-md p-1">
                   {item}
                 </Link>
               );
             })}
-            <Link href="#kontakt" onClick={(e) => scrollToSection(e, '#kontakt')} className="bg-blue-600 text-white px-8 py-3 rounded-md font-bold text-xs uppercase tracking-[0.2em] hover:bg-slate-400 hover:text-slate-900 transition-all duration-300 shadow-lg shadow-blue-600/20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50">
+            <Link href="#kontakt" onClick={(e) => handleNavClick(e, '#kontakt')} className="bg-blue-600 text-white px-8 py-3 rounded-md font-bold text-xs uppercase tracking-[0.2em] hover:bg-slate-400 hover:text-slate-900 transition-all duration-300 shadow-lg shadow-blue-600/20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50">
               Kontakt
             </Link>
           </div>
@@ -66,12 +61,12 @@ const Navigation = () => {
           {navLinks.map((item) => {
             const href = `#${item.toLowerCase().replace(' ', '-')}`;
             return (
-              <Link key={item} href={href} onClick={(e) => scrollToSection(e, href)} className="block text-sm font-black uppercase tracking-widest p-3 text-slate-900 hover:bg-slate-50 rounded-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50">
+              <Link key={item} href={href} onClick={(e) => handleNavClick(e, href)} className="block text-sm font-black uppercase tracking-widest p-3 text-slate-900 hover:bg-slate-50 rounded-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50">
                 {item}
               </Link>
             );
           })}
-          <Link href="#kontakt" onClick={(e) => scrollToSection(e, '#kontakt')} className="block text-sm font-black uppercase tracking-widest p-3 text-blue-600 hover:bg-blue-50 rounded-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50">
+          <Link href="#kontakt" onClick={(e) => handleNavClick(e, '#kontakt')} className="block text-sm font-black uppercase tracking-widest p-3 text-blue-600 hover:bg-blue-50 rounded-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/50">
             Kontakt
           </Link>
         </div>
