@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, ChangeEvent, FormEvent } from 'react';
-import { CheckCircle, Phone, Mail, MapPin } from 'lucide-react';
+import { CheckCircle, Phone, Mail, MapPin, AlertTriangle } from 'lucide-react';
 import { FormData } from '../types';
 
 const ContactSection = () => {
